@@ -1,0 +1,66 @@
+/* ini selector tag */
+p{
+    color: gold;
+    text-align: justify;
+    font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+    font-size: 12pt;
+}
+body{
+background-color: darkturquoise;
+background-image: url('../img/TNI.jpg');
+background-repeat: no-repeat;
+}
+/* grouping css */
+
+fieldset, legend{
+    border: yellow groove 3px;
+    border-radius: 30px;
+}
+legend{
+    padding: 10px;
+    font-weight: bold;
+    font-size: 14pt;
+}
+table{
+    border: 10px;
+    margin: auto;
+}
+/* psudo element id dan class */
+div#menu {
+    text-align: center;
+    font-family: Arial, Helvetica, sans-serif;
+    padding: 10px;
+    
+}
+a.item:link, a.item:visited, a.item:active{
+ text-decoration: none;
+ font-size: 16pt;   
+ color: yellow;
+ border: 2px solid yellow;
+ padding: 10px;
+ background-color: black;
+ /* display: block;
+ width: 20%; */
+ 
+
+}
+a.item:hover{
+    text-decoration: none;
+    font-size: 14pt;
+    color: white;
+    border: 2px solid greenyellow;
+    padding: 15px;
+    background-color: yellowgreen;
+}
+li.menu{
+    color:blue;
+}
+h1{
+    text-shadow: 3px 3px yellow;
+    color: yellow;
+}
+
+
+/* #atas,#bawah {
+    text-align: right;
+} */
