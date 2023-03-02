@@ -1,8 +1,0 @@
-ini adalah rincian materi terbaru
-1. html dan css
-2. github
-3. js
-4. php
-5. MySQL
-6. Laravel
-7. Rest API
