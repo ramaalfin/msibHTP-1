@@ -3,13 +3,13 @@
     // atau array didalam array
     // atau arraya yang menyimpan array
 
-    let p1 = {nama:"Arip", nilai:80};
-    let p2 = {nama:"Ali", nilai:81};
-    let p3 = {nama:"Aldi", nilai:82};
-    let p4 = {nama:"Ani", nilai:83};
-    let p5 = {nama:"Budi", nilai:50};
+    let p1 = { nama: "Rama", nilai: 91 };
+    let p2 = { nama: "Alfin", nilai: 81 };
+    let p3 = { nama: "Baehaqi", nilai: 72 };
+    let p4 = { nama: "John", nilai: 63 };
+    let p5 = { nama: "Doe", nilai: 50 };
 
-    let person = [p1,p2,p3,p4,p5];
+    let person = [p1, p2, p3, p4, p5];
 </script>
 <h3>
     <table style="padding: 10; text-align: center; width: 100%;">
@@ -17,31 +17,74 @@
             <tr>
                 <th>No</th>
                 <th>Nama</th>
-                <th>Alamat</th>
+                <th>Nilai</th>
+                <th>Predikat</th>
+                <th>Keterangan</th>
             </tr>
         </thead>
         <tbody>
             <script>
                 var no = 1;
-                for (p of person){
-                   let ket = (p.nilai >= 60)? "Lulus" : "Gagal";
+                let grade;
+                let predikat;
+                for (p of person) {
+                    if (p.nilai >= 90 && p.nilai <= 100) {
+                        grade = 'A';
+                    } else if (p.nilai >= 80 && p.nilai <= 89) {
+                        grade = 'B';
+                    } else if (p.nilai >= 70 && p.nilai <= 79){
+                        grade = 'C';
+                    } else if (p.nilai >= 60 && p.nilai <= 69){
+                        grade = 'D';
+                    } else {
+                        grade = 'E';
+                    }
+                    switch (grade) {
+                        case "A":
+                            predikat = "Sangat Baik";
+                            break;
+                        case "B":
+                            predikat = "Baik";
+                            break;
+                        case "C":
+                            predikat = "Cukup";
+                            break;
+                        case "D":
+                            predikat = "Kurang";
+                            break;
+                        case "E":
+                            predikat = "Kurang Baik";
+                            break;
+                        default:
+                            predikat = "Sangat Buruk";
+                            break;
+                    }
 
-                   //set grade A - E (menggunakan if multi kondisi)
-                   // A = 90 - 100, B 80 - 89 dan seterusnya sampai E
+                    let ket = (p.nilai >= 70) ? 'Lulus' : 'Tidak Lulus';
+                    let warna;
+                    if (ket == 'Lulus') {
+                        warna = 'green';
+                    } else if (ket == "Tidak Lulus") {
+                        warna = 'red';
+                    }
 
-                   //set predikat (menggunakan swtich case)
+                    //set grade A - E (menggunakan if multi kondisi)
+                    // A = 90 - 100, B 80 - 89 dan seterusnya sampai E
 
-                   //A = Sangat baik, B = Baik, C = Cukup, D= Kurang, E = SAngat kurang
-                   //set warna warni table menggunakan looping
-                   
-                    document.write(`<tr bgcolor="">
-                <td>${no++}</td>
-                <td>${p.nama}</td>
-                <td>${p.nilai}</td>
-                <td>${ket}</td>
-            </tr>`);
-        }
-        </script>
+                    //set predikat (menggunakan swtich case)
+
+                    //A = Sangat baik, B = Baik, C = Cukup, D= Kurang, E = SAngat kurang
+                    //set warna warni table menggunakan looping
+
+                    document.write(`<tr bgcolor="${warna}">
+                                        <td>${no++}</td>
+                                        <td>${p.nama}</td>
+                                        <td>${p.nilai}</td>
+                                        <td>${predikat}</td>
+                                        <td>${ket}</td>
+                                    </tr>`);
+                }
+            </script>
         </tbody>
     </table>
 </h3>
