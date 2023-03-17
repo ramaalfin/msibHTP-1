@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tugas 6 JS</title>
+    <script src="assets/js/jquery-3.6.4.min.js"></script>
+</head>
+
+<body>
+    <img src="assets/img/img.jpg" class="gambar">
+    <img src="assets/img/img2.jpg" class="gambar">
+    <img src="assets/img/img3.jpg" class="gambar">
+
+
+    <script>
+        $(document).ready(function () {
+            $(".gambar").click(function () {
+                $(this).hide();
+                $(".gambar").not(":hidden").slice(0, 2).hide();
+            });
+        });
+    </script>
+</body>
+
+</html>
