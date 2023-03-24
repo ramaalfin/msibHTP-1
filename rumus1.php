@@ -15,16 +15,16 @@ if (isset($_POST['proses'])) {
     // Hitung gaji pokok
     switch ($jabatan) {
         case 'manajer':
-            $gaji_pokok = 10000000;
+            $gaji_pokok = 20000000;
             break;
         case 'asisten':
-            $gaji_pokok = 7000000;
+            $gaji_pokok = 15000000;
             break;
         case 'kabag':
-            $gaji_pokok = 5000000;
+            $gaji_pokok = 10000000;
             break;
         case 'staff':
-            $gaji_pokok = 3000000;
+            $gaji_pokok = 4000000;
             break;
     }
 
@@ -33,10 +33,9 @@ if (isset($_POST['proses'])) {
 
     // Hitung tunjangan keluarga
     if ($status == 'Menikah') {
-        $tunjangan_keluarga = 0.1 * $gaji_pokok;
-        if ($jml_anak > 2) {
+        if ($jml_anak <= 2) {
             $tunjangan_keluarga += (0.05 * $gaji_pokok);
-        } else if ($jml_anak == 3 && $jml_anak >= 5) {
+        } else if ($jml_anak >= 3) {
             $tunjangan_keluarga += (0.1 * $gaji_pokok);
         } else {
             $tunjangan_keluarga = 0;
