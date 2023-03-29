@@ -91,14 +91,8 @@ if (isset($_POST['proses'])) {
         }
     }
 
-    function kategori_skill($ar_skill, $skill)
+    function kategori_skill($skor)
     {
-        $skor = 0;
-        foreach ($skill as $val) {
-            if (isset($ar_skill[$val])) {
-                $skor += ($ar_skill[$val] ?? 0);
-            }
-        }
         if ($skor >= 100 && $skor <= 150) {
             return "Sangat Baik";
         } elseif ($skor >= 60 && $skor < 100) {
@@ -147,7 +141,7 @@ if (isset($_POST['proses'])) {
             </tr>
             <tr>
                 <?php
-                $skill_kategori = kategori_skill($ar_skill, $_POST['skill']);
+                $skill_kategori = kategori_skill($skor);
                 ?>
                 <td>Kategori Skill</td>
                 <td>:</td>
