@@ -1,36 +1,8 @@
-sederhanakan kode php berikut ini dan tentukan cara menampilkannya di html. 
-<?php
-    $nim = $_POST['nim'];
-    $nama = $_POST['nama'];
-    $jk = $_POST['jk'];
-    $prodi = $_POST['prodi'];
-    $skill = $_POST['skill'];
-    $email = $_POST['email'];
+<?php 
 
-    $skor = 0;
-    foreach ($skill as $val) {
-        if (isset($ar_skill[$val])) {
-            $skor += $ar_skill[$val] ?? 0;
-        }
-    }
+$ar_prodi = ["SI" => "Sistem Informasi", "TI" => "Teknik Informatika", "ILKOM" => "Ilmu Komputer", "TE" => "Teknik Elektro"];
 
-    function kategori_skill($ar_skill, $skill)
-    {
-        $skor = 0;
-        foreach ($skill as $val) {
-            if (isset($ar_skill[$val])) {
-                $skor += ($ar_skill[$val] ?? 0);
-            }
-        }
-        if ($skor >= 100 && $skor <= 150) {
-            return "Sangat Baik";
-        } elseif ($skor >= 60 && $skor < 100) {
-            return "Baik";
-        } elseif ($skor >= 40 && $skor < 60) {
-            return "Cukup";
-        } elseif ($skor >= 0 && $skor < 40) {
-            return "Kurang";
-        } else {
-            return "Tidak Memadai";
-        }
-    }
+$ar_skill = ["HTML" => 10, "CSS" => 10, "Javascript" => 20, "RWD Bootstrap" => 20, "PHP" => 30, "MySQL" => 30, "Laravel" => 40];
+$domisili = ["Jakarta", "Bandung", "Bekasi", "Malang", "Surabaya", "lainnya"];
+
+?>
