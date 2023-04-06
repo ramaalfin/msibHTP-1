@@ -13,7 +13,8 @@ CREATE TABLE kartu(
 CREATE TABLE pelanggan(
     id INT AUTO_INCREMENT PRIMARY KEY,
     kode VARCHAR(10) UNIQUE,
-    nama VARCHAR(45) NOT NULL,
+    nama_pelanggan VARCHAR(50) NOT NULL,
+    alamat VARCHAR(40),
     jk CHAR(1),
     tmp_lahir VARCHAR(30),
     tgl_lahir DATE,
@@ -76,7 +77,6 @@ create table vendor(
 create table pembelian(
     id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     tanggal VARCHAR(45),
-    nama VARCHAR(45),
     nomor VARCHAR(10) UNIQUE,
     produk_id INT NOT NULL,
     FOREIGN KEY (produk_id) REFERENCES produk(id),
