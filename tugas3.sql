@@ -87,7 +87,7 @@ SELECT jenis_produk_id, COUNT(*) AS jumlah_produk FROM produk GROUP BY jenis_pro
 SELECT nama_pelanggan, (YEAR(NOW())-YEAR(tgl_lahir)) AS usia FROM pelanggan WHERE (YEAR(NOW())-YEAR(tgl_lahir)) < (SELECT AVG((YEAR(NOW())-YEAR(tgl_lahir))) FROM pelanggan);
 
 -- 4.	Tampilkan data produk yang harganya diatas rata-rata harga produk
-SELECT id, nama, harga_beli FROM produk WHERE harga_beli > (SELECT AVG(harga_beli) FROM produk);
+SELECT id, nama, harga_jual FROM produk WHERE harga_jual > (SELECT AVG(harga_jual) FROM produk);
 
 -- 5.	Tampilkan data pelanggan yang memiliki kartu dimana iuran tahunan kartu diatas 90rb
 SELECT pelanggan.id, pelanggan.nama_pelanggan, kartu.kode, kartu.iuran FROM pelanggan 
