@@ -60,11 +60,12 @@ CALL showProduk();
 
 -- Buat fungsi totalPesanan(), setelah itu panggil fungsinya
 DELIMITER $$
-CREATE PROCEDURE totalPesanan()
 BEGIN
-  DECLARE total_pesanan DECIMAL(10,2);
-  SELECT SUM(total) INTO total_pesanan FROM pesanan;
-  SELECT total_pesanan;
+  SELECT pelanggan.kode AS kode_pelanggan, pelanggan.nama_pelanggan, SUM(pesanan_items.qty) AS total_produk, SUM(pesanan_items.qty * pesanan_items.harga) AS total_harga
+  FROM pesanan_items
+  JOIN pesanan ON pesanan_items.pesanan_id = pesanan.id
+  JOIN pelanggan ON pesanan.pelanggan_id = pelanggan.id
+  GROUP BY pelanggan.kode, pelanggan.nama_pelanggan;
 END $$
 DELIMITER ;
 CALL totalPesanan();
