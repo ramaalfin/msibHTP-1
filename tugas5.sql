@@ -1,18 +1,21 @@
--- membuat procedure inputPelanggan()
+-- membuat fungsi inputPelanggan()
 DELIMITER $$
-CREATE PROCEDURE inputPelanggan(IN kode VARCHAR(11), IN nama_pelanggan VARCHAR(255), IN jk VARCHAR(1), IN tmp_lahir VARCHAR(255), IN tgl_lahir DATE, IN email VARCHAR(255), IN kartu_id INT(11), OUT id_pelanggan INT(11))
+CREATE FUNCTION inputPelanggan(kode VARCHAR(11), nama_pelanggan VARCHAR(255), jk VARCHAR(1), tmp_lahir VARCHAR(255), tgl_lahir DATE, email VARCHAR(255), kartu_id INT(11))
+RETURNS INT(11)
+DETERMINISTIC
 BEGIN
+  DECLARE id_pelanggan INT(11);
+  
   -- memasukkan data pelanggan baru ke dalam tabel pelanggan
   INSERT INTO pelanggan (kode, nama_pelanggan, jk, tmp_lahir, tgl_lahir, email, kartu_id) VALUES (kode, nama_pelanggan, jk, tmp_lahir, tgl_lahir, email, kartu_id);
   
   -- menyimpan id pelanggan yang baru saja dibuat
   SET id_pelanggan = LAST_INSERT_ID();
+  
+  RETURN id_pelanggan;
 END $$
 DELIMITER ;
-
--- memanggil procedure inputPelanggan()
-CALL inputPelanggan('C011', 'Alex', 'L', 'Jakarta', '1996-05-12', 'alex@gmail.com', 2, @id);
-SELECT @id;
+SELECT inputPelanggan('C012', 'Amara', 'P', 'Jakarta', '1996-05-12', 'amara@gmail.com', 2);
 
 
 
@@ -75,9 +78,12 @@ CALL totalPesanan();
 DELIMITER $$
 CREATE PROCEDURE showAllPesanan()
 BEGIN
-  SELECT pesanan.id, pesanan.tanggal, pesanan.total, pelanggan.nama_pelanggan
-  FROM pesanan
-  JOIN pelanggan ON pesanan.pelanggan_id = pelanggan.id;
+  SELECT pesanan.id AS pesanan_id, pesanan.tanggal, pelanggan.kode AS pelanggan_kode, pelanggan.nama_pelanggan, produk.kode AS produk_kode, produk.nama AS nama_produk, pesanan_items.qty, produk.harga_jual, SUM(pesanan_items.qty * pesanan_items.harga) AS total_harga
+    FROM pesanan
+    JOIN pelanggan ON pesanan.pelanggan_id = pelanggan.id
+    JOIN pesanan_items ON pesanan.id = pesanan_items.pesanan_id
+    JOIN produk ON pesanan_items.produk_id = produk.id
+    GROUP BY pesanan.id, produk.id, pesanan_items.id, pelanggan.id;
 END $$
 DELIMITER ;
 CALL showAllPesanan();
@@ -85,10 +91,11 @@ CALL showAllPesanan();
 
 -- buatkan query panjang di atas menjadi sebuah view baru: pesanan_produk_vw (menggunakan join dari table pesanan,pelanggan dan produk)
 CREATE VIEW pesanan_produk_vw AS
-SELECT pesanan.id AS pesanan_id, pesanan.tanggal, pesanan.total, pelanggan.kode AS pelanggan_kode, pelanggan.nama_pelanggan, pelanggan.jk, pelanggan.tmp_lahir, pelanggan.tgl_lahir, pelanggan.email, pelanggan.kartu_id, produk.kode AS produk_kode, produk.nama AS produk_nama, produk.harga_jual, pesanan_items.qty, pesanan_items.harga
-FROM pesanan
-JOIN pelanggan ON pesanan.pelanggan_id = pelanggan.id
-JOIN pesanan_items pesanan_items ON pesanan.id = pesanan_items.pesanan_id
-JOIN produk ON pesanan_items.produk_id = produk.id;
+SELECT pesanan.id AS pesanan_id, pesanan.tanggal, pelanggan.kode AS pelanggan_kode, pelanggan.nama_pelanggan, produk.kode AS produk_kode, produk.nama AS nama_produk, pesanan_items.qty, produk.harga_jual, SUM(pesanan_items.qty * pesanan_items.harga) AS total_harga
+    FROM pesanan
+    JOIN pelanggan ON pesanan.pelanggan_id = pelanggan.id
+    JOIN pesanan_items ON pesanan.id = pesanan_items.pesanan_id
+    JOIN produk ON pesanan_items.produk_id = produk.id
+    GROUP BY pesanan.id, produk.id, pesanan_items.id, pelanggan.id;
 
 SELECT * FROM pesanan_produk_vw;
