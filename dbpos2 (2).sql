@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: May 04, 2023 at 10:16 AM
+-- Generation Time: May 06, 2023 at 05:20 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -63,22 +63,22 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `totalPesanan` ()   BEGIN
   GROUP BY pelanggan.kode, pelanggan.nama_pelanggan;
 END$$
 
-CREATE DEFINER=`root`@`localhost` PROCEDURE `update_pembayaran_status` (`pesanan_id` INT)   BEGIN
-    DECLARE total_bayar DECIMAL(10, 2);
-    DECLARE total_pesanan DECIMAL(10, 2);
-
-    -- Ambil total pembayaran dari tabel pembayaran
-    SELECT SUM(jumlah) INTO total_bayar FROM pembayaran WHERE pesanan_id = pesanan_id;
-
-    -- Ambil total pesanan dari tabel pesanan
-    SELECT total INTO total_pesanan FROM pesanan WHERE id = pesanan_id;
-
-    -- Jika total pembayaran sama dengan total pesanan, update status pembayaran menjadi lunas
-    IF total_bayar >= total_pesanan THEN
-        UPDATE pembayaran
-        SET status_pembayaran = 'Lunas'
-        WHERE pesanan_id = pesanan_id;
-    END IF;
+CREATE DEFINER=`root`@`localhost` PROCEDURE `ubah_status_pembayaran` (IN `id_pesanan` INT, IN `status_baru` VARCHAR(20))   BEGIN
+  DECLARE total_bayar DECIMAL(10,2);
+  DECLARE total_pesanan DECIMAL(10,2);
+  
+  SELECT total INTO total_pesanan FROM pesanan WHERE id = id_pesanan;
+  SELECT SUM(jumlah_bayar) INTO total_bayar FROM pembayaran WHERE pesanan_id = id_pesanan;
+  
+  IF total_bayar >= total_pesanan THEN
+    UPDATE pembayaran SET status_pembayaran = 'Lunas' WHERE pesanan_id = id_pesanan AND jumlah_bayar > 0;
+  ELSE
+    UPDATE pembayaran SET status_pembayaran = 'Belum Lunas' WHERE pesanan_id = id_pesanan;
+  END IF;
+  
+  IF status_baru IS NOT NULL THEN
+    UPDATE pembayaran SET status_pembayaran = status_baru WHERE pesanan_id = id_pesanan;
+  END IF;
 END$$
 
 --
@@ -232,10 +232,10 @@ INSERT INTO `pelanggan` (`id`, `kode`, `nama_pelanggan`, `jk`, `tmp_lahir`, `tgl
 
 CREATE TABLE `pembayaran` (
   `id` int NOT NULL,
-  `nokuitansi` varchar(10) DEFAULT NULL,
+  `nokuitansi` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   `tanggal` date DEFAULT NULL,
-  `jumlah` double DEFAULT NULL,
-  `ke` int DEFAULT NULL,
+  `jumlah_bayar` double DEFAULT NULL,
+  `jumlah_pemesanan` int DEFAULT NULL,
   `pesanan_id` int NOT NULL,
   `status_pembayaran` varchar(100) DEFAULT 'Belum Lunas'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;
@@ -244,36 +244,13 @@ CREATE TABLE `pembayaran` (
 -- Dumping data for table `pembayaran`
 --
 
-INSERT INTO `pembayaran` (`id`, `nokuitansi`, `tanggal`, `jumlah`, `ke`, `pesanan_id`, `status_pembayaran`) VALUES
-(24, 'INV001', '2023-05-02', 20000, 1, 2, 'Belum Lunas'),
-(25, 'INV002', '2023-05-02', 17500, 2, 2, 'Belum Lunas'),
-(26, 'INV003', '2023-05-02', 20000, 1, 2, 'Belum Lunas'),
-(34, 'INV004', '2023-05-02', 25000, 1, 2, 'Lunas'),
-(35, 'INV005', '2023-05-02', 15000, 1, 11, 'Belum Lunas'),
-(36, 'INV006', '2023-05-02', 15000, 1, 11, 'Lunas'),
-(37, 'INV007', '2023-05-04', 20000, 1, 11, 'Lunas');
-
---
--- Triggers `pembayaran`
---
-DELIMITER $$
-CREATE TRIGGER `update_status_pembayaran` BEFORE INSERT ON `pembayaran` FOR EACH ROW BEGIN
-    DECLARE total_bayar DECIMAL(10, 2);
-    DECLARE total_pesanan DECIMAL(10, 2);
-
-    -- Ambil total pembayaran dari tabel pembayaran
-    SELECT SUM(jumlah) INTO total_bayar FROM pembayaran WHERE pesanan_id = NEW.pesanan_id;
-
-    -- Ambil total pesanan dari tabel pesanan
-    SELECT total INTO total_pesanan FROM pesanan WHERE id = NEW.pesanan_id;
-
-    -- Jika total pembayaran lebih besar atau sama dengan total pesanan, update status pembayaran menjadi lunas
-    IF total_bayar + NEW.jumlah >= total_pesanan THEN
-        SET NEW.status_pembayaran = 'Lunas';
-    END IF;
-END
-$$
-DELIMITER ;
+INSERT INTO `pembayaran` (`id`, `nokuitansi`, `tanggal`, `jumlah_bayar`, `jumlah_pemesanan`, `pesanan_id`, `status_pembayaran`) VALUES
+(142, 'INV-2023-05-10-134-1', '2023-05-10', 50000, 1, 134, 'Belum Lunas'),
+(143, 'INV-2023-05-10-135-1', '2023-05-10', 50000, 1, 135, 'Lunas'),
+(145, 'INV-2023-05-10-137-1', '2023-05-10', 50000, 1, 137, 'Lunas'),
+(146, 'INV-2023-05-10-138-2', '2023-05-10', 0, 2, 138, 'Belum Lunas'),
+(148, 'INV-2023-05-10-140-1', '2023-05-10', 50000, 1, 140, 'Lunas'),
+(149, 'INV-2023-05-10-141-2', '2023-05-10', 0, 2, 141, 'Belum Lunas');
 
 -- --------------------------------------------------------
 
@@ -321,17 +298,36 @@ CREATE TABLE `pesanan` (
 
 INSERT INTO `pesanan` (`id`, `tanggal`, `total`, `pelanggan_id`) VALUES
 (1, '2015-11-04', 9720000, 1),
-(2, '2015-11-04', 17500, 3),
-(3, '2015-11-04', 0, 6),
-(4, '2015-11-04', 0, 7),
-(5, '2015-11-04', 0, 10),
-(6, '2015-11-04', 0, 2),
-(7, '2015-11-04', 0, 5),
-(8, '2015-11-04', 0, 4),
-(9, '2015-11-04', 0, 8),
-(10, '2015-11-04', 0, 9),
-(11, '2023-05-04', 10000, 3),
-(12, '2023-05-05', 500000, 1);
+(134, '2023-05-10', 50000, 2),
+(135, '2023-05-10', 50000, 3),
+(137, '2023-05-10', 50000, 4),
+(138, '2023-05-10', 0, 4),
+(140, '2023-05-10', 50000, 5),
+(141, '2023-05-10', 0, 5);
+
+--
+-- Triggers `pesanan`
+--
+DELIMITER $$
+CREATE TRIGGER `trigger_pesanan_after_insert` AFTER INSERT ON `pesanan` FOR EACH ROW BEGIN
+    DECLARE jumlah_bayar INT;
+    DECLARE jumlah_pemesanan INT;
+    DECLARE total_pesanan DECIMAL(10,2);
+
+    SELECT COUNT(*) INTO jumlah_pemesanan FROM pesanan WHERE pelanggan_id = NEW.pelanggan_id AND id <= NEW.id;
+    SELECT total INTO total_pesanan FROM pesanan WHERE id = NEW.id;
+    IF total_pesanan = 0 THEN
+        SET jumlah_bayar = 0;
+    ELSE
+        SET jumlah_bayar = NEW.total;
+    END IF;
+
+    INSERT INTO pembayaran (nokuitansi, tanggal, jumlah_bayar, jumlah_pemesanan, pesanan_id, status_pembayaran) 
+    VALUES (CONCAT('INV-', NEW.tanggal, '-', NEW.id, '-', jumlah_pemesanan), NEW.tanggal, jumlah_bayar, jumlah_pemesanan, NEW.id, 'Belum Lunas');
+   CALL ubah_status_pembayaran(NEW.id, NULL);
+   END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -353,12 +349,7 @@ CREATE TABLE `pesanan_items` (
 
 INSERT INTO `pesanan_items` (`id`, `produk_id`, `pesanan_id`, `qty`, `harga`) VALUES
 (1, 1, 1, 1, 5040000),
-(2, 3, 1, 1, 4680000),
-(3, 5, 2, 5, 3500),
-(6, 5, 3, 10, 3500),
-(7, 1, 3, 1, 5040000),
-(9, 5, 5, 10, 3500),
-(10, 5, 6, 20, 3500);
+(2, 3, 1, 1, 4680000);
 
 -- --------------------------------------------------------
 
@@ -367,14 +358,14 @@ INSERT INTO `pesanan_items` (`id`, `produk_id`, `pesanan_id`, `qty`, `harga`) VA
 -- (See below for the actual view)
 --
 CREATE TABLE `pesanan_produk_vw` (
-`pesanan_id` int
-,`tanggal` date
-,`pelanggan_kode` varchar(10)
+`harga_jual` double
 ,`nama_pelanggan` varchar(45)
-,`produk_kode` varchar(10)
 ,`nama_produk` varchar(45)
+,`pelanggan_kode` varchar(10)
+,`pesanan_id` int
+,`produk_kode` varchar(10)
 ,`qty` int
-,`harga_jual` double
+,`tanggal` date
 ,`total_harga` double
 );
 
@@ -547,7 +538,7 @@ ALTER TABLE `pelanggan`
 -- AUTO_INCREMENT for table `pembayaran`
 --
 ALTER TABLE `pembayaran`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=150;
 
 --
 -- AUTO_INCREMENT for table `pembelian`
@@ -559,7 +550,7 @@ ALTER TABLE `pembelian`
 -- AUTO_INCREMENT for table `pesanan`
 --
 ALTER TABLE `pesanan`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=142;
 
 --
 -- AUTO_INCREMENT for table `pesanan_items`
